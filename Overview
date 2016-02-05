@@ -1,7 +1,7 @@
 Arduino Dyno
 
 Overview
-Using an Arduino Uno to control the braking force to the retarder and passing data to the PC to be displayed and logged. In order to achieve this The Arduino must send the retarder RPM and load sensor reading via usb to the PC, which will calculate the power and display it and/or log it. There will be two setting. Tuning: where the Arduino will hold the RPM set by a pot, which will enable ECU tuning at all throttle positions. Power run: where the Arduino will create a braking force to enable a full throttle power run lasting approximately 10 seconds which can then be logged by the PC
+Using an Arduino Uno to control the braking force to the retarder and passing data to the PC to be displayed and logged. In order to achieve this The Arduino must send the retarder RPM and load sensor reading via usb to the PC, which will calculate the power and display it and/or log it. There will be two setting. Tuning: where the Arduino will hold the RPM set by a pot, which will enable ECU tuning at all throttle positions. Power run: where the Arduino will create a braking force to enable a full throttle power run lasting approximately 10 seconds which can then be logged by the PC. A weather station will be required to send the PC details to assist calculation of Dyno correction factor
 Arduino
 
 Start Up 
@@ -25,12 +25,46 @@ Power output
 When the pot changes value, Arduino will calculate the difference between required RPM and actual RPM measured by the optical sensor. Using a formula (to be determined), Arduino will calculate how much more or less power to send to the retarder. 0 - 5v can be sent via an analogue pin using a value between 0 and 255 0 = 0v and 255 = 5v. I am not sure if this resolution will be accurate enough as 5v sent to the retarder power supply will equate to 196v at the retarder. 
 At 4500 RPM and 196v supply, the retarder will produce a braking force of 800 ft/lb. Therefore 800/196 = 4 ft/lb per volt.
 196/255 = 0.77v per analogue point.
-4*0.77 = 3.08 ft/lb per analogue point
- 
+4*0.77 = 3.08 ft/lb per analogue point.
+It may therefore be necessary to not use an Uno but a Due ,as it has a 32bit processor and DAC1 and DAC2 
+These pins provides true analog outputs with 12-bits resolution (4096 levels) with theanalogWrite() function. These pins can be used to create an audio output using the Audio library.
+Therefore 196/4096 = 0.0478515625v per point
+4*0.0478515625 = 0.19140625 ft/lb per point
+Details found here
+ However, the analogue output pins are only 3v3 so will require a logic level converter.
+Details found here
 
-
+The retarder power supply requires 0-5v input to regulate the voltage output. Arduino Unowill be supplying a 5v digital PWM signal. This may work fine but it would be wise to be prepared with a simple PWM to voltage converter.
+Details found here 
 
 
 
 
 PC
+
+The PC must connect to Arduino and send it some settings.
+1.Tuning or Power Run mode .
+2.Expected Max engine RPM converted, using the gear ratio, to retarder RPM.
+3.Expected maximum power, with which can be used to calculate a braking force for the power run mode.
+
+There will have to be a connection setup consisting of Baud rate and COM Port.
+There will be an engine setup consisting of Expected maximum RPM, Expected maximum BHP and gear ratio
+Formulas
+
+Dyno correction factor SAE J1349 2004 assuming 85% mechanical efficiency
+
+Cf= 1.176[(990/Pd)((Tc+273)/298)^0.5]-0.176
+
+
+Cf = Correction factor
+Pd = Dry air pressure in mb
+Tc = Ambient temperature in deg C
+
+Dry air pressure = actual air pressure - vapor pressure
+
+Power 
+
+Hp=  (T*RPM )/5252
+
+Hp = Horse power hp
+T = Torque ft-lbs
