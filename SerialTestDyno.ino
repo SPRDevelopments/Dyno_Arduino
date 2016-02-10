@@ -1,20 +1,5 @@
 /*
-  Serial Event example
-
-  When new serial data arrives, this sketch adds it to a String.
-  When a newline is received, the loop prints the string and
-  clears it.
-
-  A good test for this is to try it with a GPS receiver
-  that sends out NMEA 0183 sentences.
-
-  Created 9 May 2011
-  by Tom Igoe
-
-  This example code is in the public domain.
-
-  http://www.arduino.cc/en/Tutorial/SerialEvent
-
+  
 */
 
 String inputString = "";         // a string to hold incoming data
@@ -32,8 +17,9 @@ void setup() {
   while (inputString != "tt")
   {
     inputString = "";
-    delay(10);
+    
     Serial.println("tt");
+    delay(10);
     while (Serial.available())
     {
       char x = Serial.read();
@@ -58,7 +44,7 @@ void setup() {
     }
     //Serial.print("Complete setup line ");
     Serial.println(inputString);
-    //delay(1000);
+    delay(10);
   }
 
 }
@@ -84,10 +70,7 @@ for(int x=7200; x > 601 ; x=x-50)
 }
 
 /*
-  SerialEvent occurs whenever a new data comes in the
-  hardware serial RX.  This routine is run between each
-  time loop() runs, so using delay inside loop can delay
-  response.  Multiple bytes of data may be available.
+  
 */
 
 
