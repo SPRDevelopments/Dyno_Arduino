@@ -1,76 +1,94 @@
-/*
-  
-*/
-
-String inputString = "";         // a string to hold incoming data
-boolean stringComplete = false;  // whether the string is complete
-
+String inputString = "A";         // a string to hold incoming data
+String revs;
+String setupLine;
+boolean found ;
+int rev = 7200;
 void setup() {
+  pinMode(13, OUTPUT);
   // initialize serial:
-  Serial.begin(9600);
-  // reserve 200 bytes for the inputString:
-  inputString.reserve(200);
+  Serial.begin(115200);
   inputString = "";
 
-  // send "tt" and wait for a reply of "tt"
-
-  while (inputString != "tt")
+  //wait for "ff" and send a reply of "ff"
+  while (found == false)
   {
-    inputString = "";
-    
-    Serial.println("tt");
-    delay(10);
-    while (Serial.available())
-    {
-      char x = Serial.read();
-      //Serial.println(x);
-      inputString += x;
-    }
+    getFf();
   }
-  //Serial.println("Input Setup");
   
-  // Read and print setup
-  
-  //delay(1000);
   inputString = "";
-  while (inputString != "ss")
+  found = false;
+  while (found == false)
   {
-    inputString = "";
-    while (Serial.available())
-    {
-      char x = Serial.read();
-      inputString += x;
-      //Serial.println(inputString);
-    }
-    //Serial.print("Complete setup line ");
+    readLine();
+  }
+  Serial.print("Revs are ");
+  Serial.println(setupLine);
+  revs = setupLine;
+  rev = revs.toInt();
+  Serial.print("Rev is ");
+  Serial.println(rev);
+}
+void loop()
+{
+  int x;
+ 
+  for (x = 600; x < rev ; x = x + 200);
+  {
+    Serial.println( x);
+    delay(10);
+  }
+  for ( x = rev; x >= 600 ; x = x - 100)
+  {
+    Serial.println(x);
+    delay(20);
+  }
+}
+//Functions
+void readLine()
+{
+  String x;
+  while (Serial.available())
+  {
+    x = Serial.readString();
+    setupLine = setupLine + x;
+  }
+  if (setupLine.length() > 0)
+  {
+    found = true;
+  }
+  else
+  {
+    found = false;
+  }
+}
+void getFf()
+{
+
+  char x;
+  while (Serial.available() > 0 )
+  {
+    x = Serial.read();
+    inputString = inputString + x;
+  }
+
+  if (inputString != "ff")
+  {
     Serial.println(inputString);
-    delay(10);
+    inputString = "";
+    found = false;
   }
+  else
+  {
 
-}
-
-
-void loop() 
-{
-for(int x=600; x < 7201; x=x+100)
-{
-  Serial.println(x);
-  delay(10);  
-}
-
-for(int x=7200; x > 601 ; x=x-50)
-{
-  Serial.println(x);
-  delay(20);
-  
-}
-
-
+    Serial.println(inputString);
+    //inputString = "";
+    found = true;
+  }
 
 }
 
 /*
-  
+
 */
 
 
