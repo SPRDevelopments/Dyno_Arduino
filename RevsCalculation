@@ -1,6 +1,6 @@
 volatile long intMSecs = 0; // two variables are declared as volatile as can be altered by all programs at all times
 volatile long intCount = 0; // specifically these are used in the interrupt.
-long flagsPerRev = 0; // Number of flags on the encoder per revolution.
+long flagsPerRev = 2; // Number of flags on the encoder per revolution.
 
 void setup() 
 {
