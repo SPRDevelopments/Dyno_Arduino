@@ -1,5 +1,6 @@
 volatile long intMSecs = 0; // two variables are declared as volatile as can be altered by all programs at all times
 volatile long intCount = 0; // specifically these are used in the interrupt.
+long flagsPerRev = 0; // Number of flags on the encoder per revolution.
 
 void setup() 
 {
@@ -27,7 +28,7 @@ void loop()
 long Revs(long localPrevMs, long localPrevCount, long localCurrentMs, long localCurrentCount) // Calculate Revs
 {
   long revsCalc; 
-  revsCalc = ((60000 / (localCurrentMs - localPrevMs)) * (localCurrentCount - localPrevCount));
+  revsCalc = (((60000 / (localCurrentMs - localPrevMs)) * (localCurrentCount - localPrevCount)) / flagsPerRev);
   return revsCalc;
 }
 
