@@ -1,0 +1,39 @@
+volatile long intMSecs = 0; // two variables are declared as volatile as can be altered by all programs at all times
+volatile long intCount = 0; // specifically these are used in the interrupt.
+
+void setup() 
+{
+  pinMode(2, INPUT_PULLUP); // set pin 2 as interrupt
+  attachInterrupt(0, Interval, FALLING); // watch for falling edge of pulse for interrupt and call 'Interval' when detected.
+}
+
+void loop() 
+{
+  long prevMs, prevCount, currentMs, currentCount;
+  int currentRevs;
+  
+  currentMs = intMSecs; // fix the intMS from the interrupt before calling calculation
+  currentCount = intCount; // fix the intCount from the interrupt before calling calculation
+  currentRevs = Revs(prevMs, prevCount, currentMs, currentCount); // call revs calculation, return is a LONG.
+  prevMs = currentMs; // remember previous Ms as used in calculation
+  prevCount = currentCount; // remember previous number of reads count in calculation
+}
+
+
+// revs calculation takes into account how many pulses have been detected between calculations as well as ms.
+// this is because the interrupt could be called multiple times between calculations, however we are not going
+// to send data every time the interrupt runs, therefore theres no point doing the calc everytime either.
+// the return is a long and is RPM
+long Revs(long localPrevMs, long localPrevCount, long localCurrentMs, long localCurrentCount) // Calculate Revs
+{
+  long revsCalc; 
+  revsCalc = ((60000 / (localCurrentMs - localPrevMs)) * (localCurrentCount - localPrevCount));
+  return revsCalc;
+}
+
+// this is the interrupt, its very short because it needs to run fast and must be kept short!
+void Interval()
+{
+  intMSecs= millis();
+  intCount += 1;
+} 
